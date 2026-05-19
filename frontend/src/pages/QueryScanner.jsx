@@ -16,7 +16,8 @@ export default function QueryScanner() {
 
     try {
       const response = await api.post('/scan/query', { query });
-      setResult(response.data);
+      // backend returns { query, result }
+      setResult(response.data.result);
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to scan query.');
     } finally {
@@ -68,7 +69,7 @@ export default function QueryScanner() {
             </div>
             <div className="rounded-3xl border border-slate-700 p-6">
               <p className="text-sm uppercase tracking-[0.3em] text-slate-400">Detected Patterns</p>
-              <p className="mt-3 text-slate-200">{result.patterns?.join(', ') || 'None'}</p>
+              <p className="mt-3 text-slate-200">{result.patterns && result.patterns.length ? result.patterns.join(', ') : 'None'}</p>
             </div>
           </div>
         </div>

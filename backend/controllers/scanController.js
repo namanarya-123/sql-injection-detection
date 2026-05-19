@@ -9,7 +9,16 @@ export async function scanQuery(req, res, next) {
       return res.status(400).json({ message: 'Query text is required' });
     }
 
-    const result = detectSQLInjection(query);
+    const rawResult = detectSQLInjection(query);
+
+    // Normalize detector output so frontend can consume consistent keys
+    const result = {
+      malicious: !!rawResult.malicious,
+      severity: rawResult.severity || 'Low',
+      confidence: rawResult.confidence || '0%',
+      patterns: rawResult.detectedPatterns || rawResult.patterns || [],
+    };
+
     await ScanHistory.create({ userId: req.user.id, query, result });
 
     if (result.malicious) {
